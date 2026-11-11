@@ -121,7 +121,13 @@ tools/
 ├── harness.py
 ├── check_clip_intake.py
 ├── check_shot_index.py
-└── check_contact_sheet.py
+├── check_contact_sheet.py
+├── check_persistence_faults.py
+└── fault_injection/
+    ├── sitecustomize.py   # test-only os.replace fault hook
+    ├── process.py         # real subprocess service lifecycle
+    ├── disk.py            # independent data-root inspection
+    └── scenarios.py       # fault matrix and verdicts
 ```
 
 ## Build and workflow checks
@@ -143,6 +149,21 @@ PYTHONPATH=src:. python3 tools/check_contact_sheet.py
 Each check starts a real loopback HTTP server, generates media through the
 production AVI writer, completes the named workflow, and verifies persisted
 state or artifact bytes. Temporary records are removed when the check exits.
+
+### Persistence fault verification
+
+A separate suite distinguishes ordinary storage exceptions from sudden
+process death. It runs the real `frame_proxy serve` program in a subprocess
+against an isolated data root, injects faults at the atomic publication
+boundary (an in-process `OSError` versus `SIGKILL`), restarts the service
+against the same data root, and reconciles what the client saw, what the
+restarted service reads, and what the disk holds. See
+[`FAULT_VERIFICATION.md`](FAULT_VERIFICATION.md) for the verdict model and
+the explicitly undecidable ranges.
+
+```bash
+PYTHONPATH=src:. python3 tools/check_persistence_faults.py
+```
 
 ## Environment variables
 

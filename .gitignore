@@ -6,4 +6,5 @@ artifacts/
 demo/
 *.avi
 *.ppm
+persistence-fault-report.json
 

@@ -20,5 +20,13 @@
       "workflow_id": "create-contact-sheet",
       "command": "PYTHONPATH=src:. python3 tools/check_contact_sheet.py"
     }
-  ]
+  ],
+  "fault_verification": {
+    "command": "PYTHONPATH=src:. python3 tools/check_persistence_faults.py",
+    "runs_in_subprocess": true,
+    "isolated_data_root_per_scenario": true,
+    "fault_classes": ["in-process OSError at os.replace", "SIGKILL of the service process"],
+    "verdicts": ["NOT_COMMITTED", "COMMITTED", "INDETERMINATE"],
+    "documentation": "FAULT_VERIFICATION.md"
+  }
 }
